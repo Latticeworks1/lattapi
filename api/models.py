@@ -1,8 +1,3 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 from datetime import datetime
 
 import json
@@ -11,7 +6,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
-
 
 class Users(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -71,15 +65,25 @@ class Users(db.Model):
 
         return self.toDICT()
 
-
 class JWTTokenBlocklist(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     jwt_token = db.Column(db.String(), nullable=False)
-    created_at = db.Column(db.DateTime(), nullable=False)
+    created_at = db.Column(db.DateTime(), default=datetime.now)
 
     def __repr__(self):
-        return f"Expired Token: {self.jwt_token}"
+        return f"JWTTokenBlocklist {self.jwt_token}"
 
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+# New Model Added
+from flask_restx import fields, Api
+
+# Initialize the API
+rest_api = Api(version="1.0", title="Example API")
+
+# Define the MessageModel
+MessageModel = rest_api.model('MessageModel', {
+    'message': fields.String(required=True, description='The message to process')
+})
